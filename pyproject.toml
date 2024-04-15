@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "image-resizing-api"
+version = "0.1.0"
+description = "The project involves developing a feature that accepts an image file and desired dimensions, then resizes the image to fit within those specifications, with the option to crop the image to maintain the aspect ratio or to add padding to fit the specified dimensions without cropping. Key preferences and requirements include: - The use of PNG format for its support of transparency and the ability to maintain high image quality after compression and resizing. - Desired dimensions are set at 1280x720 pixels, chosen for its balance between quality and file size, suitable for both online viewing and moderate-quality printing. - Keeping the original aspect ratio of the image is essential to avoid stretching or squashing, maintaining the visual fidelity of the original image. - When adjusting the aspect ratio, padding is preferred over cropping to ensure no part of the image is lost, maintaining the integrity of the visual content. The tech stack for this project includes Python as the programming language, FastAPI for the API framework, PostgreSQL for the database, and Prisma as the ORM. This stack supports the development of high-performance, scalable applications, and ensures efficient database management and seamless deployment of web services."
+authors = ["AutoGPT <info@agpt.co>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+pillow = "*"
+bcrypt = "^3.2.0"
+fastapi = "^0.81.0"
+prisma = "*"
+pydantic = "*"
+python-multipart = "*"
+uvicorn = "*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

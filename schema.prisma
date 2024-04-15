@@ -1,0 +1,113 @@
+// datasource db defines the database connection settings.
+// It is configured for PostgreSQL and uses an environment variable for the connection URL.
+// The 'extensions' feature enables the use of PostgreSQL-specific data types.
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+}
+
+// generator db configures Prisma Client settings.
+// It is set up to use Prisma Client Python with asyncio interface and specific features.
+generator db {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+  previewFeatures      = ["postgresqlExtensions"]
+}
+
+model User {
+  id             String          @id @default(cuid())
+  email          String          @unique
+  password       String
+  role           Role
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  images         Image[]
+  apiKeys        APIKey[]
+  subscriptions  Subscription[]
+  uploadAttempts UploadAttempt[]
+}
+
+model Image {
+  id            String          @id @default(cuid())
+  userId        String
+  originalUrl   String
+  resizedUrl    String?
+  desiredWidth  Int
+  desiredHeight Int
+  crop          Boolean         @default(false)
+  padding       Boolean         @default(false)
+  paddingColor  String? // in hex format, e.g., #FFFFFF
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  tasks         Task[]
+  uploadAttempt UploadAttempt[]
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Task {
+  id           String     @id @default(cuid())
+  imageId      String
+  status       TaskStatus
+  errorMessage String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  image Image @relation(fields: [imageId], references: [id])
+}
+
+model APIKey {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String
+  status    SubscriptionStatus
+  startDate DateTime           @default(now())
+  endDate   DateTime
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model UploadAttempt {
+  id        String   @id @default(cuid())
+  imageId   String
+  attempts  Int      @default(0)
+  success   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  image  Image   @relation(fields: [imageId], references: [id])
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+}
+
+enum Role {
+  Administrator
+  ContentCreator
+  User
+}
+
+enum TaskStatus {
+  Pending
+  InProgress
+  Completed
+  Failed
+}
+
+enum SubscriptionStatus {
+  Active
+  Inactive
+  Cancelled
+}
+
